@@ -52,7 +52,28 @@ def generate_candidate_from_llm(prompt: str) -> str | None:
                 "$methods | ForEach-Object { $_.WmiSetBrightness(1, $brightness) | Out-Null }\n"
                 "Write-Output \"Brightness set to $brightness percent.\"\n"
             )
-    if "masaüst" in lower and ("oluştur" in lower or "yaz" in lower or "ekle" in lower):
+    is_folder_request = (
+        ("masaüst" in lower or "desktop" in lower)
+        and re.search(r"(?:klas(?:ö|o)r|folder|directory)", lower, re.IGNORECASE)
+        and re.search(r"(?:olu[sş]tur|create|make|new)", lower, re.IGNORECASE)
+    )
+    if is_folder_request:
+        name_match = (
+            re.search(r"([A-Za-z0-9_.-]+)\s+ad(?:ı|i)nda\b", lower, re.IGNORECASE)
+            or re.search(r"(?:name|named|called)\s*(?:is\s*)?[=:]?\s*[\"']?([A-Za-z0-9_. -]+?)[\"']?(?:\s*$|\s+(?:on|at)\s+desktop)", lower, re.IGNORECASE)
+        )
+        if name_match:
+            folder_name = name_match.group(1).strip(" .\"'")
+            if folder_name and not re.search(r"[\\/:*?\"<>|]", folder_name):
+                safe_name = folder_name.replace("'", "''")
+                return (
+                    "$ErrorActionPreference = 'Stop'\n"
+                    "$desktop = [Environment]::GetFolderPath('Desktop')\n"
+                    f"$path = Join-Path $desktop '{safe_name}'\n"
+                    "New-Item -Path $path -ItemType Directory -Force | Out-Null\n"
+                    "Write-Output \"Created: $path\"\n"
+                )
+    if "masaüst" in lower and ("oluştur" in lower or "yaz" in lower or "ekle" in lower) and not is_folder_request:
         # try extract filename like 'merhaba.txt' from prompt
         matches = re.findall(r"(?<!\w)([A-Za-z0-9_.-]+\.txt)\b", prompt, re.IGNORECASE)
         filename = matches[-1] if matches else "output.txt"

@@ -65,6 +65,21 @@ class ControllerTests(unittest.TestCase):
         candidate = controller.generate_candidate_from_llm("parlaklığı %50 yap")
         self.assertFalse(controller.candidate_requires_admin(candidate))
 
+    def test_turkish_desktop_folder_request_is_deterministic(self):
+        with patch.object(controller.runner, "call_gemini_adapter", side_effect=AssertionError("LLM must not be called")):
+            candidate = controller.generate_candidate_from_llm("masaüstüne merhaba adında yeni bir klasör oluştur")
+
+        self.assertIn("ItemType Directory", candidate)
+        self.assertIn("merhaba", candidate.lower())
+        self.assertNotIn("ne merhaba", candidate.lower())
+
+    def test_english_desktop_folder_request_is_deterministic(self):
+        with patch.object(controller.runner, "call_gemini_adapter", side_effect=AssertionError("LLM must not be called")):
+            candidate = controller.generate_candidate_from_llm("make a directory to desktop. name is Merhaba")
+
+        self.assertIn("ItemType Directory", candidate)
+        self.assertIn("merhaba", candidate.lower())
+
     def test_arbitrary_prompt_is_sent_to_llm_as_script_task(self):
         requests = []
 
