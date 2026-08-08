@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.audit/
+.rollback/
+.mcp_registry/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
