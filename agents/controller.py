@@ -37,7 +37,7 @@ def generate_candidate_from_llm(prompt: str) -> str | None:
         if unicodedata.category(char) != "Mn"
     )
     brightness = re.search(
-        r"(?:parlaklig(?:i|ini)|brightness)\s*(?:%\s*|yuzde\s+)?(\d{1,3})\b",
+        r"(?:parlaklik|parlakligi|parlaklig?ini|brightness)\s*(?:%\s*|yuzde\s+)?(\d{1,3})\b",
         normalized,
         re.IGNORECASE,
     )

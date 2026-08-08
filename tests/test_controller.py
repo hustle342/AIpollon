@@ -55,6 +55,12 @@ class ControllerTests(unittest.TestCase):
 
         self.assertIn("$brightness = 50", candidate)
 
+    def test_brightness_prompt_without_case_suffix_is_supported(self):
+        with patch.object(controller.runner, "call_gemini_adapter", side_effect=AssertionError("LLM must not be called")):
+            candidate = controller.generate_candidate_from_llm("parlaklık %100 yap")
+
+        self.assertIn("$brightness = 100", candidate)
+
     def test_brightness_remediation_does_not_require_admin_heuristically(self):
         candidate = controller.generate_candidate_from_llm("parlaklığı %50 yap")
         self.assertFalse(controller.candidate_requires_admin(candidate))

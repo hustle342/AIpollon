@@ -83,7 +83,16 @@ def repl(adapter) -> None:
                 print("Preparing to run automated remediation (requires admin).")
                 name = "from_repl"
                 # invoke controller as subprocess with confirm
-                proc = subprocess.run([sys.executable, "-m", "agents.controller", "--prompt", prompt, "--confirm", "--name", name], capture_output=True, text=True)
+                try:
+                    proc = subprocess.run(
+                        [sys.executable, "-m", "agents.controller", "--prompt", prompt, "--confirm", "--name", name],
+                        capture_output=True,
+                        text=True,
+                        timeout=90,
+                    )
+                except subprocess.TimeoutExpired:
+                    print("Controller timed out after 90 seconds.")
+                    continue
                 print("--- Controller output ---")
                 if proc.stdout:
                     print(proc.stdout)
