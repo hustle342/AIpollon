@@ -7,5 +7,5 @@ name = "aipollon"
 version = "0.1.0"
 description = "CLI-first Windows repair agent that synthesizes MCP tools"
 authors = [ { name = "AIPOLLON" } ]
-readme = "readme.md"
+readme = "README.md"
 requires-python = ">=3.10"
